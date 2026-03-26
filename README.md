@@ -7,6 +7,7 @@ For the first cut, it bundles the `pypi-supply-chain-response` expertise from `a
 ## What it does
 
 - scans a target folder or broad host-visible paths
+- ignores self-generated paths like `.git/`, `target/`, and bundled skill assets when walking a target tree
 - checks common Python manifests and lockfiles
 - hunts for exact compromised versions, loose references, IOC files, IOC domains, and user-visible Python environment evidence
 - reports permission gaps cleanly and suggests `sudo` only when it would help
