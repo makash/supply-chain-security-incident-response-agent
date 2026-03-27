@@ -10,6 +10,23 @@ For the first cut, it bundles the `pypi-supply-chain-response` expertise from [a
 
 *A quick scan → explain flow for the bundled LiteLLM incident.*
 
+## Why SCIRA?
+
+Most incident-response tools people built after the LiteLLM compromise fell into one of four buckets:
+- web checkers that cannot inspect your actual machine
+- one-off bash or Python scripts tied to a single incident
+- agent skills that require Claude Code or another host agent
+- manual command lists with no report structure or audit trail
+
+SCIRA takes a different approach:
+
+- **Single binary** — scan a compromised ecosystem without having to trust that ecosystem's tooling first
+- **Local-first** — inspect a repo, a home directory, or a server directly
+- **Structured output** — human-readable summary, JSON report, and meaningful exit codes
+- **Agentic workflow** — deterministic scan first, optional AI explanation second
+- **Offline-capable scanning** — the core scan does not need network access
+- **Built to grow** — first cut ships with `litellm`, but the model is designed for more incident profiles over time
+
 ## What it does
 
 - scans a target folder or broad host-visible paths
@@ -19,7 +36,7 @@ For the first cut, it bundles the `pypi-supply-chain-response` expertise from [a
 - reports permission gaps cleanly and suggests `sudo` only when it would help
 - can optionally explain the findings with an LLM so the CLI feels like an agent, not just a scanner
 
-## First-cut UX
+## Quick start
 
 ```bash
 scira scan litellm
@@ -35,6 +52,46 @@ You can also explain a saved JSON report later:
 scira scan litellm --format json --output report.json
 scira explain report.json
 ```
+
+## What you get back
+
+Example terminal summary:
+
+```text
+Status: likely_affected
+
+Why:
+- A compromised version or strong IOC evidence was found during the scan.
+- Found compromised version 1.82.8 in /srv/app/requirements.txt:1
+- Found IOC domain models.litellm.cloud in logs/app.log:42
+
+Immediate next steps:
+1. Isolate the affected host or runner
+2. Preserve evidence before cleanup
+3. Rotate credentials in scope
+```
+
+If you need something scriptable or shareable, use JSON output:
+
+```bash
+scira scan litellm --target /srv/app --format json --output report.json
+```
+
+## Server usage
+
+One of the intended workflows for SCIRA is: copy a single binary to a server, run it as a specific user, and inspect that user's environment.
+
+```bash
+scp scira-linux-amd64 server:/tmp/scira
+ssh server
+chmod +x /tmp/scira
+sudo -u myuser -H /tmp/scira scan litellm --target /home/myuser
+```
+
+This is useful when:
+- you want to inspect a particular operator or app user's home directory
+- you do not want to install Python packages or helper scripts on the server
+- you want deterministic output plus a report you can save or ship elsewhere
 
 ## Install
 
@@ -134,16 +191,16 @@ It also supports provider-native env vars when present:
 - `GEMINI_API_KEY`
 - `GOOGLE_API_KEY`
 
-## Example
+## Trust model
 
-```bash
-scira scan litellm --target .
-```
+SCIRA is designed to keep evidence collection and reasoning separate.
 
-Typical flow:
-1. `scira` collects deterministic evidence
-2. `scira` prints a human-readable summary
-3. if an LLM API key is available, `scira` offers to explain the findings and remediation guidance
+- **Deterministic scan results are the source of truth**
+- **AI explanation is optional and advisory**
+- **Core scanning is local-first and offline-capable**
+- **Nothing leaves the machine unless you explicitly enable an LLM-backed explanation**
+
+That means you can use SCIRA as a plain local incident-response CLI, or as a more agentic tool when you want help interpreting findings.
 
 ## Exit codes
 
