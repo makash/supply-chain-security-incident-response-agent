@@ -34,7 +34,7 @@ scira explain report.json
 
 ## Install
 
-Download the right binary from the [GitHub Releases](../../releases) page, rename it to `scira`, and make it executable.
+Download the right binary from the [SCIRA GitHub Releases page](https://github.com/makash/scira/releases), rename it to `scira`, and make it executable.
 
 ### macOS (Apple Silicon)
 
@@ -68,26 +68,30 @@ If needed, you can verify the attribute first:
 xattr ./scira
 ```
 
-#### Why this is required
+#### Why devtools hit this
 
-When you download a binary directly from the internet, macOS often adds the `com.apple.quarantine` attribute. Gatekeeper then treats the file as untrusted until it is notarized, signed, or explicitly allowed.
+When you download a CLI binary from GitHub Releases, macOS often marks it with `com.apple.quarantine`. Gatekeeper then treats it like an unknown internet download until it is notarized, signed, or explicitly allowed.
 
-This is common for independent open source CLI tools distributed via GitHub Releases. The binary may be perfectly legitimate, but because it is not notarized through Apple's distribution pipeline, macOS blocks it by default.
+That is normal for indie and open source developer tools. `scira` is a direct release binary, not an app distributed through Apple's pipeline, so you may need to clear quarantine before running it.
 
-#### Why this is not just bypassing security theater
+#### Why this is not just security theater
 
-Removing the quarantine attribute is a trust decision, so it should be done deliberately:
+This should be a deliberate developer workflow, not a blind bypass:
 
-- download the binary from the official GitHub Releases page
-- verify the repo owner and release URL
-- verify checksums from `sha256sums.txt` if provided
-- only then remove quarantine and run it
+- download from the official [`makash/scira` releases page](https://github.com/makash/scira/releases)
+- verify the URL and repo owner
+- verify `sha256sums.txt` if you want a stronger trust check
+- then remove quarantine and run it
 
-So this is **not** "ignore macOS security and run random binaries." It is closer to saying:
+In other words, you are not saying:
 
-> "I have verified the source of this release artifact, and I want macOS to stop treating it as an unknown internet download."
+> "run a random binary from the internet"
 
-If you are distributing `scira` inside an organization later, code signing and notarization would remove the need for this manual step.
+You are saying:
+
+> "I trust this specific release artifact and want macOS to stop treating it as an unknown download."
+
+If `scira` later adds code signing and notarization, this manual step should disappear.
 
 ### Linux (x86_64)
 
