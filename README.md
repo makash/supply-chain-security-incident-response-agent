@@ -41,6 +41,7 @@ Download the right binary from the [GitHub Releases](../../releases) page, renam
 ```bash
 curl -L -o scira https://github.com/makash/scira/releases/download/v0.1.0/scira-darwin-arm64
 chmod +x scira
+xattr -d com.apple.quarantine ./scira 2>/dev/null || true
 ./scira scan litellm
 ```
 
@@ -49,7 +50,22 @@ chmod +x scira
 ```bash
 curl -L -o scira https://github.com/makash/scira/releases/download/v0.1.0/scira-darwin-amd64
 chmod +x scira
+xattr -d com.apple.quarantine ./scira 2>/dev/null || true
 ./scira scan litellm
+```
+
+### macOS note: Gatekeeper / quarantine
+
+If macOS says the binary cannot be opened because it is from an unidentified developer, remove the quarantine attribute after download:
+
+```bash
+xattr -d com.apple.quarantine ./scira
+```
+
+If needed, you can verify the attribute first:
+
+```bash
+xattr ./scira
 ```
 
 ### Linux (x86_64)
