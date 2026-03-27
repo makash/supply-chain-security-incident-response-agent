@@ -68,6 +68,27 @@ If needed, you can verify the attribute first:
 xattr ./scira
 ```
 
+#### Why this is required
+
+When you download a binary directly from the internet, macOS often adds the `com.apple.quarantine` attribute. Gatekeeper then treats the file as untrusted until it is notarized, signed, or explicitly allowed.
+
+This is common for independent open source CLI tools distributed via GitHub Releases. The binary may be perfectly legitimate, but because it is not notarized through Apple's distribution pipeline, macOS blocks it by default.
+
+#### Why this is not just bypassing security theater
+
+Removing the quarantine attribute is a trust decision, so it should be done deliberately:
+
+- download the binary from the official GitHub Releases page
+- verify the repo owner and release URL
+- verify checksums from `sha256sums.txt` if provided
+- only then remove quarantine and run it
+
+So this is **not** "ignore macOS security and run random binaries." It is closer to saying:
+
+> "I have verified the source of this release artifact, and I want macOS to stop treating it as an unknown internet download."
+
+If you are distributing `scira` inside an organization later, code signing and notarization would remove the need for this manual step.
+
 ### Linux (x86_64)
 
 ```bash
