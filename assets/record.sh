@@ -27,44 +27,46 @@ sleep_brief() {
 clear
 sleep 0.4
 printf '\033[1mSCIRA demo\033[0m\n'
-printf '  Host-side supply chain incident response agent\n\n'
+printf '  Supply Chain Incident Response Agent\n'
+printf '  Built-in incidents: LiteLLM (PyPI), Axios (npm)\n\n'
 sleep 1.0
 
 prompt
-simulate_typing "scira scan litellm --target /srv/app"
+simulate_typing "scira scan litellm --target /srv/python-app"
 sleep_brief
 echo ""
 sleep 0.5
 printf '\033[1mStatus:\033[0m likely_affected\n\n'
-warn "Found compromised version 1.82.8 in /srv/app/requirements.txt"
+warn "Found compromised version 1.82.8 in /srv/python-app/requirements.txt"
 warn "Found IOC domain models.litellm.cloud in logs/app.log"
-
 printf '\n\033[1mImmediate next steps:\033[0m\n'
-printf '1. Isolate the host or runner\n'
+printf '1. Isolate the affected host or runner\n'
 printf '2. Preserve evidence before cleanup\n'
 printf '3. Rotate credentials in scope\n'
-sleep 2.2
+sleep 2.0
 
 echo ""
-printf 'Scan complete. Would you like an AI explanation and remediation summary? [Y/n] '
-sleep 0.8
-printf 'y\n'
-sleep 0.7
+prompt
+simulate_typing "scira scan axios --target /srv/node-app"
+sleep_brief
+echo ""
+sleep 0.5
+printf '\033[1mStatus:\033[0m likely_affected\n\n'
+warn "Found compromised version 1.14.1 in /srv/node-app/package-lock.json"
+warn "Found compromised version 4.2.1 in /srv/node-app/node_modules/plain-crypto-js"
+printf '\n\033[1mImmediate next steps:\033[0m\n'
+printf '1. Isolate the affected CI runner or host\n'
+printf '2. Preserve npm evidence and lockfiles\n'
+printf '3. Rotate npm, git, cloud, and SSH credentials\n'
+sleep 2.0
 
 echo ""
-printf '\033[1mAI explanation\033[0m\n'
-printf 'Provider: anthropic\n'
-printf 'Model: claude-3-5-sonnet-latest\n\n'
-sleep 0.8
-printf '\033[1mExecutive summary\033[0m\n'
-printf 'This environment appears likely affected because a compromised\n'
-printf 'LiteLLM version was found alongside IOC evidence.\n\n'
-sleep 1.1
-printf '\033[1mPriority actions\033[0m\n'
-ok "Isolate the affected host or runner"
-ok "Rotate cloud, git, and SSH credentials"
-ok "Rebuild from a known-good dependency state"
-
-printf '\n\033[1mVerification warning\033[0m\n'
-printf 'Recommendations are advisory. Verify before destructive action.\n'
+prompt
+simulate_typing "scira scan axios --target /srv/node-app --format json --output axios-report.json"
+sleep_brief
+echo ""
+sleep 0.5
+ok "Deterministic report written to axios-report.json"
+ok "Ready for AI explanation or incident handoff"
+printf '\n\033[1mSCIRA\033[0m: deterministic scan first, optional AI explanation second.\n'
 sleep 2.0

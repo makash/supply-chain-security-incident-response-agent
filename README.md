@@ -128,7 +128,7 @@ Download the right binary from the [SCIRA GitHub Releases page](https://github.c
 ### macOS (Apple Silicon)
 
 ```bash
-curl -L -o scira https://github.com/makash/scira/releases/download/v0.1.1/scira-darwin-arm64
+curl -L -o scira https://github.com/makash/scira/releases/download/v0.2.0/scira-darwin-arm64
 chmod +x scira
 xattr -d com.apple.quarantine ./scira 2>/dev/null || true
 ./scira scan litellm
@@ -137,7 +137,7 @@ xattr -d com.apple.quarantine ./scira 2>/dev/null || true
 ### macOS (Intel)
 
 ```bash
-curl -L -o scira https://github.com/makash/scira/releases/download/v0.1.1/scira-darwin-amd64
+curl -L -o scira https://github.com/makash/scira/releases/download/v0.2.0/scira-darwin-amd64
 chmod +x scira
 xattr -d com.apple.quarantine ./scira 2>/dev/null || true
 ./scira scan litellm
@@ -185,7 +185,7 @@ If `scira` later adds code signing and notarization, this manual step should dis
 ### Linux (x86_64)
 
 ```bash
-curl -L -o scira https://github.com/makash/scira/releases/download/v0.1.1/scira-linux-amd64
+curl -L -o scira https://github.com/makash/scira/releases/download/v0.2.0/scira-linux-amd64
 chmod +x scira
 ./scira scan litellm
 ```
