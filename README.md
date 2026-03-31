@@ -4,6 +4,10 @@
 
 `scira` is a single-binary host/folder incident-response agent for software supply chain incidents, starting with PyPI and npm.
 
+Out of the box, SCIRA helps you respond to two major supply chain incidents:
+- **LiteLLM on PyPI** — detect compromised `litellm` versions, IOC domains, IOC files, and Python environment evidence
+- **Axios on npm** — detect compromised `axios` versions, the malicious `plain-crypto-js` dependency, IOC domains, and Node/npm environment evidence
+
 For the first cut, it bundles ecosystem-specific incident-response expertise from [agent-infra-security](https://github.com/makash/agent-infra-security) and ships with built-in `litellm` and `axios` incident flows.
 
 ![SCIRA demo](assets/demo.gif)
@@ -25,14 +29,37 @@ SCIRA takes a different approach:
 - **Structured output** — human-readable summary, JSON report, and meaningful exit codes
 - **Agentic workflow** — deterministic scan first, optional AI explanation second
 - **Offline-capable scanning** — the core scan does not need network access
-- **Built to grow** — current built-in incidents are `litellm` and `axios`, and the model is designed for more incident profiles over time
+- **Useful today** — built-in response flows for the LiteLLM PyPI compromise and the Axios npm compromise
+- **Built to grow** — the model is designed for more incident profiles over time
+
+## Built-in incident response
+
+### LiteLLM on PyPI
+Use SCIRA to check whether a host, repo, or user environment was affected by the LiteLLM compromise.
+
+SCIRA looks for:
+- compromised `litellm` versions
+- loose and pinned references in Python manifests and lockfiles
+- IOC domains like `models.litellm.cloud` and `checkmarx.zone`
+- IOC files like `litellm_init.pth`
+- installed-package evidence from Python environments and caches
+
+### Axios on npm
+Use SCIRA to check whether a host, repo, or CI workspace was affected by the Axios compromise.
+
+SCIRA looks for:
+- compromised `axios` versions
+- the malicious `plain-crypto-js` dependency
+- loose and pinned references in `package.json` and `package-lock.json`
+- IOC domains like `sfrclak.com`
+- installed-package evidence from npm environments and caches
 
 ## What it does
 
 - scans a target folder or broad host-visible paths
 - ignores self-generated paths like `.git/`, `target/`, and bundled skill assets when walking a target tree
-- checks common Python manifests and lockfiles
-- hunts for exact compromised versions, loose references, IOC files, IOC domains, and user-visible Python environment evidence
+- checks common Python and Node/npm manifests and lockfiles
+- hunts for exact compromised versions, loose references, IOC files, IOC domains, and user-visible environment evidence
 - reports permission gaps cleanly and suggests `sudo` only when it would help
 - can optionally explain the findings with an LLM so the CLI feels like an agent, not just a scanner
 
@@ -42,6 +69,7 @@ SCIRA takes a different approach:
 scira scan litellm
 scira scan axios --target /srv/app
 scira scan litellm --all-dirs
+scira scan axios --format json --output axios-report.json
 ```
 
 If LLM access is configured and you are in an interactive terminal, `scira` offers to explain the report after the deterministic scan completes.
